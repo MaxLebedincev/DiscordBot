@@ -1,0 +1,13 @@
+﻿{
+  "ConfigurationBot": {
+    "Token": "token",
+    "Prefix": "s!",
+    "Currently": "watching",
+    "StatusText": "s!help",
+    "Status": "online|dnd|idle|offline",
+    "UserMusic": {
+      "750018405808996434": "25697.mp3",
+      "412277201917050881": "25697_2.mp3"
+    }
+  }
+}
