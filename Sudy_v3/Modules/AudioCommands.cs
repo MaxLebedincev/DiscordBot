@@ -11,8 +11,6 @@ namespace Sudy_v3.Modules
 {
     public class AudioCommands : ModuleBase<SocketCommandContext>
     {
-        private static string _PathRoot = AppDomain.CurrentDomain.BaseDirectory + @"../../../Data/Music/";
-
         private readonly ConfigurationBot _config;
 
         public AudioCommands(IServiceProvider services)
@@ -28,7 +26,7 @@ namespace Sudy_v3.Modules
 
             IAudioClient? audio = await channel.ConnectAsync();
 
-            await SendAsync(audio, @"C:\Study\Sudy_v3\Sudy_v3\Sudy_v3\Data\Music\rwbyTru.mp3");
+            await SendAsync(audio, $@"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Music}uwu-very.mp3");
 
         }
 
@@ -48,8 +46,8 @@ namespace Sudy_v3.Modules
 
             var v = youtube.GetVideo(@"https://www.youtube.com/watch?v=__-vp0g_BhA");
 
-            string filePath = @$"C:\Study\Sudy_v3\Sudy_v3\Sudy_v3\Data\Youtube{Guid.NewGuid()}{v.FileExtension}";
-            string outFileName = @$"C:\Study\Sudy_v3\Sudy_v3\Sudy_v3\Data\Youtube{Guid.NewGuid()}.mp3";
+            string filePath = $@"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Youtube}{Guid.NewGuid()}{v.FileExtension}";
+            string outFileName = $@"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Youtube}{Guid.NewGuid()}.mp3";
 
             File.WriteAllBytes(filePath, v.GetBytes());
 
@@ -102,7 +100,7 @@ namespace Sudy_v3.Modules
 
             IAudioClient? audio = await channel.ConnectAsync();
 
-            await SendAsync(audio, _PathRoot + currentPath);
+            await SendAsync(audio, @$"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Music}{currentPath}");
 
             await channel.DisconnectAsync();
         }
@@ -120,30 +118,29 @@ namespace Sudy_v3.Modules
         }
 
         //break
-        private async Task Record(IAudioClient audio)
-        {
-            MemoryStream mem = new MemoryStream(new byte[1024]);
-            FileStream fileStream = new FileStream("E:\\Project\\Sudy_v3\\fileM.mp3", FileMode.Create, System.IO.FileAccess.Write);
-            using (AudioInStream c = audio.GetStreams().First().Value)
-            {
-                Console.WriteLine("Начал запись");
-                await Task.Delay(2000);
-                await c.CopyToAsync(mem);
-                Console.WriteLine("Закончил запись");
-            }
-            mem.WriteTo(fileStream);
-        }
+        //private async Task Record(IAudioClient audio)
+        //{
+        //    MemoryStream mem = new MemoryStream(new byte[1024]);
+        //    FileStream fileStream = new FileStream("fileM.mp3", FileMode.Create, System.IO.FileAccess.Write);
+        //    using (AudioInStream c = audio.GetStreams().First().Value)
+        //    {
+        //        Console.WriteLine("Начал запись");
+        //        await Task.Delay(2000);
+        //        await c.CopyToAsync(mem);
+        //        Console.WriteLine("Закончил запись");
+        //    }
+        //    mem.WriteTo(fileStream);
+        //}
 
         private Process? CreateStream(string path)
         {
-            var a = Process.Start(new ProcessStartInfo
+            return Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
             });
-            return a;
         }
 
 

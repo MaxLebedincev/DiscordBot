@@ -9,5 +9,10 @@
       "750018405808996434": "25697.mp3",
       "412277201917050881": "25697_2.mp3"
     }
+  },
+  "LocalStorage": {
+    "Main": "Data",
+    "Youtube": "Data/Youtube/",
+    "Music": "Data/Music/"
   }
 }
