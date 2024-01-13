@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sudy_v3;
 using FFmpeg.AutoGen;
+using Discord.Interactions;
+using VideoLibrary;
+using Sudy_v3.Modules;
 
 await MainAsync();
 
@@ -26,7 +29,7 @@ async Task MainAsync()
     client.Log += Log;
     await client.LoginAsync(TokenType.Bot, config.Token);
     await client.StartAsync();
-    await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
+    await services.GetRequiredService<CommandHandlingService>().InitializeModules();
 
     await Task.Delay(-1);
 
@@ -42,15 +45,20 @@ ServiceProvider ConfigureServices()
             .GetSection(nameof(ConfigurationBot))
             .Get<ConfigurationBot>()
         )
-        .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+        .AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
         {
             MessageCacheSize = 500,
-            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+            GatewayIntents = GatewayIntents.All
+        }))
+        .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), new InteractionServiceConfig()
+        {
+            LogLevel = LogSeverity.Info,
+            DefaultRunMode = Discord.Interactions.RunMode.Async
         }))
         .AddSingleton(new CommandService(new CommandServiceConfig
         {
             LogLevel = LogSeverity.Info,
-            DefaultRunMode = RunMode.Async,
+            DefaultRunMode = Discord.Commands.RunMode.Async,
             CaseSensitiveCommands = false
         }))
         .AddSingleton<CommandHandlingService>()
@@ -58,7 +66,7 @@ ServiceProvider ConfigureServices()
 }
 
 Task Log(LogMessage msg)
-{
+    {
     Console.WriteLine(msg.ToString());
     return Task.CompletedTask;
 }

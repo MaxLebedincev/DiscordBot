@@ -1,9 +1,11 @@
 ﻿using Discord;
 using Discord.Audio;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Sudy_v3.Modules;
+using System;
 using System.Reflection;
 
 namespace Sudy_v3
@@ -12,6 +14,7 @@ namespace Sudy_v3
     {
         
         private readonly CommandService _commands;
+        private readonly InteractionService _interactionService;
         private readonly DiscordSocketClient _client;
         private readonly ConfigurationBot _config;
         private readonly IServiceProvider _services;
@@ -20,6 +23,7 @@ namespace Sudy_v3
         {
 
             _commands = services.GetRequiredService<CommandService>();
+            _interactionService = services.GetRequiredService<InteractionService>();
             _client = services.GetRequiredService<DiscordSocketClient>();
             _config = services.GetRequiredService<ConfigurationBot>();
             _services = services;
@@ -28,7 +32,17 @@ namespace Sudy_v3
             _client.Ready += ClientReadyAsync;
             _client.MessageReceived += HandleCommandAsync;
             _client.JoinedGuild += SendJoinMessageAsync;
-            //_client.UserVoiceStateUpdated += SendAsync;
+            _client.InteractionCreated += SlashCommandHandler;
+        }
+
+        private async Task SlashCommandHandler(SocketInteraction arg)
+        {
+            var context = new SocketInteractionContext(_client, arg);
+
+            var result = await _interactionService.ExecuteCommandAsync(context, _services);
+
+            if (!result.IsSuccess && result.Error.HasValue)
+                return;
         }
 
         private async Task HandleCommandAsync(SocketMessage rawMessage)
@@ -84,23 +98,53 @@ namespace Sudy_v3
             }
         }
 
-        private async Task SendAsync(SocketUser su, SocketVoiceState svs, SocketVoiceState svs2)
+        private async Task ClientReadyAsync()
         {
+            List<ApplicationCommandProperties> applicationCommandProperties = new();
 
-            if (_config.UserMusic != null && _config.UserMusic.ContainsKey(su.Id.ToString()) && svs2.VoiceChannel != null)
-            {
-                AudioCommands? ModuleAC = new AudioCommands(_services);
+            SlashCommandBuilder globalCommandHelp = new SlashCommandBuilder()
+                .WithName("help")
+                .WithDescription("Shows information about the bot.");
+            applicationCommandProperties.Add(globalCommandHelp.Build());
 
-                await ModuleAC.JoinChannelPrivate(svs2.VoiceChannel, su.Id.ToString());
-            }
+            SlashCommandBuilder globalCommandHi = new SlashCommandBuilder()
+                .WithName("hi")
+                .WithDescription("Поприветствовать Sudy.");
+            applicationCommandProperties.Add(globalCommandHi.Build());
 
-            return;
+            SlashCommandBuilder globalCommandapple = new SlashCommandBuilder()
+                .WithName("apple")
+                .WithDescription("Поделиться яблочком.")
+                .AddOption("user", ApplicationCommandOptionType.User, "Кому вы дадите яблоко?", isRequired: false);
+            applicationCommandProperties.Add(globalCommandapple.Build());
+
+            SlashCommandBuilder globalCommandAva = new SlashCommandBuilder()
+                .WithName("avatar")
+                .WithDescription("Получить аватар пользователя.")
+                .AddOption("user", ApplicationCommandOptionType.User, "Чья аватарка?", isRequired: true);
+            applicationCommandProperties.Add(globalCommandAva.Build());
+
+            SlashCommandBuilder globalCommandThanks = new SlashCommandBuilder()
+                .WithName("thanks")
+                .WithDescription("Ссылка на вспомогательный код.");
+            applicationCommandProperties.Add(globalCommandThanks.Build());
+
+            SlashCommandBuilder globalCommandFFmpeg = new SlashCommandBuilder()
+                .WithName("ffmpeg")
+                .WithDescription("Ссылка на вспомогательный код.");
+            applicationCommandProperties.Add(globalCommandFFmpeg.Build());
+
+            await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray());
+
+            await new Functions(_services).SetBotStatusAsync(_client);
         }
 
-        private async Task ClientReadyAsync()
-            => await new Functions(_services).SetBotStatusAsync(_client);
+        public async Task InitializeModules()
+        {
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
-        public async Task InitializeAsync()
-            => await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
     }
 }
+ 
