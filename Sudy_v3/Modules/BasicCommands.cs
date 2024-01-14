@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,15 +16,12 @@ namespace Sudy_v3.Modules
 
         [SlashCommand("help", "Показать информацию о боте.")]
         public async Task Help()
-            => await RespondAsync(@"
-```
-hi              - Поприветствовать Sudy.
-apple [@User]   - Поделиться яблочком.
-avatar          - Получить аватар пользователя.
-thanks          - Ссылка на вспомогательный код (.NET Core 3.0).
-```
-");                                                                      //TODO Доработать, возможно убрать исходник
+        {
+            // TODO: Update using markdown 
+            string template = File.ReadAllText(@$"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Template}help");
 
+            await RespondAsync(template);
+        }   
 
         [SlashCommand("hi", "Поприветствовать Sudy.")]
         public async Task Hello()

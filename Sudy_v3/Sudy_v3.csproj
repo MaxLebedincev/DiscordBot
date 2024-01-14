@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Addons.EmbedTool" Version="1.0.0" />
     <PackageReference Include="Discord.Net.Commands" Version="3.13.0" />
     <PackageReference Include="Discord.Net.Interactions" Version="3.13.0" />
     <PackageReference Include="Discord.Net.WebSocket" Version="3.13.0" />
@@ -46,10 +47,6 @@
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-	
-  <ItemGroup>
-    <None Remove="Data\SlashCommand.json" />
-  </ItemGroup>
 	
   <ItemGroup>
     <Content Include="$(SolutionDir)Sudy_v3\ffmpeg-lib\win_x86-64\avcodec-60.dll" Link="ffmpeg-lib\avcodec-60.dll" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />

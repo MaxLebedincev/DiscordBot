@@ -20,5 +20,6 @@
         public string? Music { get; set; }
         public string? Youtube { get; set; }
         public string? SlashCommand { get; set; }
+        public string? Template { get; set; }
     }
 }
