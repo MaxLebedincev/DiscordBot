@@ -1,0 +1,62 @@
+﻿[
+  {
+    "name": "help",
+    "description": "Показать информацию о боте."
+  },
+  {
+    "name": "hi",
+    "description": "Поприветствовать Sudy."
+  },
+  {
+    "name": "apple",
+    "description": "Поделиться яблочком.",
+    "options": [
+      {
+        "name": "user",
+        "type": "User",
+        "description": "Кому вы дадите яблоко?",
+        "required": false
+      }
+    ]
+  },
+  {
+    "name": "avatar",
+    "description": "Получить аватар пользователя.",
+    "options": [
+      {
+        "name": "user",
+        "type": "User",
+        "description": "Чья аватарка?",
+        "required": true
+      }
+    ]
+  },
+  {
+    "name": "thanks",
+    "description": "Ссылка на вспомогательный код."
+  },
+  {
+    "name": "ffmpeg",
+    "description": "Получить конфигурацию используемого ffmpeg."
+  },
+  {
+    "name": "join",
+    "description": "Пригласить бота в канал."
+  },
+  {
+    "name": "play",
+    "description": "Проиграть музыку.",
+    "options": [
+      {
+        "name": "url",
+        "type": "String",
+        "description": "Музыки из ютуба",
+        "required": true
+      }
+    ]
+  },
+  {
+    "name": "leave",
+    "description": "Выгнать бота."
+  }
+]

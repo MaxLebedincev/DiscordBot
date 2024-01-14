@@ -55,18 +55,12 @@ ServiceProvider ConfigureServices()
             LogLevel = LogSeverity.Info,
             DefaultRunMode = Discord.Interactions.RunMode.Async
         }))
-        .AddSingleton(new CommandService(new CommandServiceConfig
-        {
-            LogLevel = LogSeverity.Info,
-            DefaultRunMode = Discord.Commands.RunMode.Async,
-            CaseSensitiveCommands = false
-        }))
         .AddSingleton<CommandHandlingService>()
         .BuildServiceProvider();
 }
 
 Task Log(LogMessage msg)
-    {
+{
     Console.WriteLine(msg.ToString());
     return Task.CompletedTask;
 }

@@ -48,6 +48,10 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <None Remove="Data\SlashCommand.json" />
+  </ItemGroup>
+	
+  <ItemGroup>
     <Content Include="$(SolutionDir)Sudy_v3\ffmpeg-lib\win_x86-64\avcodec-60.dll" Link="ffmpeg-lib\avcodec-60.dll" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(SolutionDir)Sudy_v3\ffmpeg-lib\win_x86-64\avdevice-60.dll" Link="ffmpeg-lib\avdevice-60.dll" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(SolutionDir)Sudy_v3\ffmpeg-lib\win_x86-64\avfilter-9.dll" Link="ffmpeg-lib\avfilter-9.dll" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />

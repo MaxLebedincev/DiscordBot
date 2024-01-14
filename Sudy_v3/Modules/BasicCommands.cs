@@ -50,7 +50,7 @@ thanks          - Ссылка на вспомогательный код (.NET 
         public async Task Source()
             => await RespondAsync($":heart: **{Context.Client.CurrentUser}** is based on this source code:\nhttps://github.com/VACEfron/Discord-Bot-Csharp");
 
-        [SlashCommand("ffmpeg", "Ссылка на вспомогательный код.")]
+        [SlashCommand("ffmpeg", "Получить конфигурацию используемого ffmpeg.")]
         public async Task SourceFFmpeg()
         {
             string msg = FFmpeg.AutoGen.ffmpeg.avfilter_configuration();

@@ -19,5 +19,6 @@
         public string? Main { get; set; }
         public string? Music { get; set; }
         public string? Youtube { get; set; }
+        public string? SlashCommand { get; set; }
     }
 }

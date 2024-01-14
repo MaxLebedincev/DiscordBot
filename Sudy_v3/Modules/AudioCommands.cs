@@ -2,6 +2,7 @@
 using Discord.Audio;
 using Discord.Audio.Streams;
 using Discord.Commands;
+using Discord.Interactions;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using VideoLibrary;
 
 namespace Sudy_v3.Modules
 {
-    public class AudioCommands : ModuleBase<SocketCommandContext>
+    public class AudioCommands : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly ConfigurationBot _config;
 
@@ -18,11 +19,12 @@ namespace Sudy_v3.Modules
             _config = services.GetRequiredService<ConfigurationBot>();
         }
 
-        [Command("join", RunMode = RunMode.Async)]
-        public async Task JoinChannel(IVoiceChannel? channel = null)
+        [SlashCommand("join", "Пригласить бота в канал.")]
+        public async Task JoinChannel()
         {
-            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
-            if (channel == null) { await Context.Channel.SendMessageAsync($"А, {Context.User.Mention}, выйдет?"); return; }
+            var channel = (Context.User as IGuildUser)?.VoiceChannel ?? null;
+
+            if (channel == null) { await RespondAsync($"А, {Context.User.Mention}, выйдет?"); return; }
 
             IAudioClient? audio = await channel.ConnectAsync();
 
@@ -34,11 +36,12 @@ namespace Sudy_v3.Modules
         unsafe static AVFormatContext* _pAvFormatInputFileContext = null;
         unsafe static AVFormatContext* _pAvFormatOutputFileContext = null;
 
-        [Command("play", RunMode = RunMode.Async)]
-        public async Task JoinChannel(IVoiceChannel? channel = null, IMessage mess = null)
+        [SlashCommand("play", "Проиграть музыку.")]
+        public async Task PlayMusic(string url)
         {
-            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
-            if (channel == null) { await Context.Channel.SendMessageAsync($"А, {Context.User.Mention}, выйдет?"); return; }
+            var channel = (Context.User as IGuildUser)?.VoiceChannel ?? null;
+
+            if (channel == null) { await RespondAsync($"А, {Context.User.Mention}, выйдет?"); return; }
 
             IAudioClient? audio = await channel.ConnectAsync();
 
@@ -89,22 +92,6 @@ namespace Sudy_v3.Modules
 
         }
 
-        public async Task JoinChannelPrivate(IVoiceChannel? channel, string idUser)
-        {
-            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
-            if (channel == null) { return; }
-
-            string currentPath;
-
-            if (!_config.UserMusic.TryGetValue(idUser, out currentPath)) { return; }
-
-            IAudioClient? audio = await channel.ConnectAsync();
-
-            await SendAsync(audio, @$"{AppDomain.CurrentDomain.BaseDirectory}{_config.LocalStorage.Music}{currentPath}");
-
-            await channel.DisconnectAsync();
-        }
-
         private async Task SendAsync(IAudioClient client, string path)
         {
             // Create FFmpeg using the previous example
@@ -117,21 +104,6 @@ namespace Sudy_v3.Modules
             }
         }
 
-        //break
-        //private async Task Record(IAudioClient audio)
-        //{
-        //    MemoryStream mem = new MemoryStream(new byte[1024]);
-        //    FileStream fileStream = new FileStream("fileM.mp3", FileMode.Create, System.IO.FileAccess.Write);
-        //    using (AudioInStream c = audio.GetStreams().First().Value)
-        //    {
-        //        Console.WriteLine("Начал запись");
-        //        await Task.Delay(2000);
-        //        await c.CopyToAsync(mem);
-        //        Console.WriteLine("Закончил запись");
-        //    }
-        //    mem.WriteTo(fileStream);
-        //}
-
         private Process? CreateStream(string path)
         {
             return Process.Start(new ProcessStartInfo
@@ -143,14 +115,14 @@ namespace Sudy_v3.Modules
             });
         }
 
-
-        [Command("leave", RunMode = RunMode.Async)]
-        public async Task LeaveChannel(IVoiceChannel? channel = null)
+        [SlashCommand("leave", "Выгнать бота.")]
+        public async Task LeaveChannel()
         {
-            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
-            if (channel == null) { await Context.Channel.SendMessageAsync($"Ты что-то говорил, {Context.User.Mention}? тебя не слышно"); return; }
+            var channel = (Context.User as IGuildUser)?.VoiceChannel ?? null;
+            
+            if (channel == null) { await RespondAsync($"Ты что-то говорил, {Context.User.Mention}? тебя не слышно"); return; }
 
-            await Context.Channel.SendMessageAsync($"Всем пока!");
+            await RespondAsync($"Всем пока!");
 
             await channel.DisconnectAsync();
         }
